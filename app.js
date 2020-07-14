@@ -12,6 +12,13 @@ const budgetController = (function(){
     this.value = value;
   }
 
+  let calculateTotal = function(type){
+    let sum = 0;
+    data.allItems[type].forEach(function(current) {
+      sum += current.value;
+    })
+  };
+
   var data = {
     allItems: {
       exp: [],
@@ -50,6 +57,12 @@ const budgetController = (function(){
 
     },
 
+    calculateBudget: function() {
+      // 1. calculate total income & expenses
+      // 2. calculate the budget: income - expenses
+      // 3. calculate the percentage of income that has been spent.
+    },
+
     testing: function(){
       console.log(data);
     }
@@ -78,7 +91,7 @@ const UIController = (function(){
       return {
         type: document.querySelector(DOMstrings.inputType).value, // Will either be 'inc' or 'exp'
         description: document.querySelector(DOMstrings.inputDescription).value,
-        value: document.querySelector(DOMstrings.inputValue).value
+        value: parseFloat(document.querySelector(DOMstrings.inputValue).value)
       }
     },
 
@@ -103,6 +116,20 @@ const UIController = (function(){
     // 3. Insert the HTML into the DOM;
       document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
 
+    },
+
+    clearFields: function() {
+      let fields, fieldsArr;
+
+      fields = document.querySelectorAll(DOMstrings.inputDescription + ', ' + DOMstrings.inputValue);
+
+      fieldsArr = Array.prototype.slice.call(fields);
+
+      fieldsArr.forEach(function(current, index, array) {
+        current.value = '';
+      });
+
+      fieldsArr[0].focus();
     },
 
     getDOMstrings: function(){
@@ -134,6 +161,14 @@ const controller = (function(budgetCtrl, UICtrl){
 
   }
 
+  var updateBudget = function() {
+    // 1. Calculate the budget.
+
+    // 2. Return the budget.
+
+    // 3. Display the budget.
+  }
+
   const ctrlAddItem = function () {
 
     let input, newItem;
@@ -141,15 +176,22 @@ const controller = (function(budgetCtrl, UICtrl){
     // 1. Get the field input data.
     input = UICtrl.getInput();
 
+    if (input.description !== '' && !isNaN(input.value) && input.value > 0){
+
     // 2. Add the item to the budget controller.
     newItem = budgetCtrl.addItem(input.type, input.description, input.value);
 
     // 3. Add the item to the UI.
     UIController.addListItem(newItem, input.type);
 
-    // 4. Calculate the budget.
+    // 4. Clear the fields
+    UIController.clearFields();
 
-    // 5. Display the budget.
+    // 5. Calculate and update budget
+    updateBudget();
+
+    }
+    else { console.log('rip')}
 
   }
 
